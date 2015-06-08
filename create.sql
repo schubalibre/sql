@@ -1,0 +1,307 @@
+CREATE TABLE State
+  (
+	ID  	INTEGER NOT NULL ,
+	Name VARCHAR (255 CHAR)
+  ) ;
+ALTER TABLE State ADD CONSTRAINT State_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Active_Defense
+  (
+	ID  	INTEGER NOT NULL ,
+	Keyword VARCHAR (255 CHAR)
+  ) ;
+
+ALTER TABLE Active_Defense ADD CONSTRAINT Active_Defense_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Category
+  ( ID INTEGER NOT NULL
+  ) ;
+ALTER TABLE Category ADD CONSTRAINT Category_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Crime
+  (
+	ID      	INTEGER NOT NULL ,
+	Value    	INTEGER ,
+	Location_ID INTEGER NOT NULL
+  ) ;
+CREATE UNIQUE INDEX Crime__IDX ON Crime
+  (
+	Location_ID ASC
+  )
+  ;
+  ALTER TABLE Crime ADD CONSTRAINT Crime_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE KeywordMatchCategory
+  (
+	Keywords_ID INTEGER NOT NULL ,
+	Category_ID INTEGER NOT NULL
+  ) ;
+ALTER TABLE KeywordMatchCategory ADD CONSTRAINT KeywordMatchCategory_PK PRIMARY KEY ( Keywords_ID, Category_ID ) ;
+
+CREATE TABLE Keywords
+  (
+	ID             	INTEGER NOT NULL ,
+	Passive_Defense_ID INTEGER NOT NULL ,
+	Active_Defense_ID   INTEGER NOT NULL
+  ) ;
+CREATE UNIQUE INDEX Keywords__IDX ON Keywords
+  (
+	Passive_Defense_ID ASC
+  )
+  ;
+CREATE UNIQUE INDEX Keywords__IDXv1 ON Keywords
+  (
+	Active_Defense_ID ASC
+  )
+  ;
+  ALTER TABLE Keywords ADD CONSTRAINT Keywords_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Location
+  (
+	ID       	INTEGER NOT NULL ,
+	City     	VARCHAR (255 CHAR) ,
+	StateID  	INTEGER ,
+	Population INTEGER
+  ) ;
+
+ALTER TABLE Location ADD CONSTRAINT Location_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE LocationMatchQuery
+  (
+	Location_ID INTEGER NOT NULL ,
+	Query_ID	INTEGER NOT NULL
+  ) ;
+ALTER TABLE LocationMatchQuery ADD CONSTRAINT LocationMatchQuery_PK PRIMARY KEY ( Location_ID, Query_ID ) ;
+
+CREATE TABLE Passive_Defense
+  (
+	ID  	INTEGER NOT NULL ,
+	Keyword VARCHAR (255 CHAR)
+  ) ;
+ALTER TABLE Passive_Defense ADD CONSTRAINT Passive_Defense_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Query
+  (
+	ID     	INTEGER NOT NULL ,
+	Querry 	VARCHAR (255 CHAR) ,
+	USERAOL_ID	INTEGER NOT NULL ,
+	Website_ID INTEGER NOT NULL
+  ) ;
+CREATE UNIQUE INDEX Query__IDX ON Query
+  (
+	Website_ID ASC
+  )
+  ;
+  ALTER TABLE Query ADD CONSTRAINT Query_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE QueryMatchKeyword
+  (
+	Query_ID	INTEGER NOT NULL ,
+	Keywords_ID INTEGER NOT NULL
+  ) ;
+ALTER TABLE QueryMatchKeyword ADD CONSTRAINT QueryMatchKeyword_PK PRIMARY KEY ( Query_ID, Keywords_ID ) ;
+
+CREATE TABLE "USERAOL"
+  ( ID INTEGER NOT NULL
+  ) ;
+ALTER TABLE "USERAOL" ADD CONSTRAINT USERAOL_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Violence
+  (
+	ID      	INTEGER NOT NULL ,
+	Value    	INTEGER ,
+	Location_ID INTEGER NOT NULL
+  ) ;
+CREATE UNIQUE INDEX Violence__IDX ON Violence
+  (
+	Location_ID ASC
+  )
+  ;
+  ALTER TABLE Violence ADD CONSTRAINT Violence_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE Website
+  ( ID INTEGER NOT NULL , URL VARCHAR (255 CHAR)
+  ) ;
+ALTER TABLE Website ADD CONSTRAINT Website_PK PRIMARY KEY ( ID ) ;
+
+CREATE TABLE WebsiteMatchCategory
+  (
+	Website_ID  INTEGER NOT NULL ,
+	Category_ID INTEGER NOT NULL
+  ) ;
+ALTER TABLE WebsiteMatchCategory ADD CONSTRAINT WebsiteMatchCategory_PK PRIMARY KEY ( Website_ID, Category_ID ) ;
+
+ALTER TABLE Crime ADD CONSTRAINT Crime_Location_FK FOREIGN KEY ( Location_ID ) REFERENCES Location ( ID ) ;
+
+ALTER TABLE KeywordMatchCategory ADD CONSTRAINT FK_ASS_1 FOREIGN KEY ( Keywords_ID ) REFERENCES Keywords ( ID ) ;
+
+ALTER TABLE WebsiteMatchCategory ADD CONSTRAINT FK_ASS_13 FOREIGN KEY ( Website_ID ) REFERENCES Website ( ID ) ;
+
+ALTER TABLE WebsiteMatchCategory ADD CONSTRAINT FK_ASS_14 FOREIGN KEY ( Category_ID ) REFERENCES Category ( ID ) ;
+
+ALTER TABLE KeywordMatchCategory ADD CONSTRAINT FK_ASS_2 FOREIGN KEY ( Category_ID ) REFERENCES Category ( ID ) ;
+
+ALTER TABLE LocationMatchQuery ADD CONSTRAINT FK_ASS_3 FOREIGN KEY ( Location_ID ) REFERENCES Location ( ID ) ;
+
+ALTER TABLE LocationMatchQuery ADD CONSTRAINT FK_ASS_4 FOREIGN KEY ( Query_ID ) REFERENCES Query ( ID ) ;
+
+ALTER TABLE QueryMatchKeyword ADD CONSTRAINT FK_ASS_5 FOREIGN KEY ( Query_ID ) REFERENCES Query ( ID ) ;
+
+ALTER TABLE QueryMatchKeyword ADD CONSTRAINT FK_ASS_6 FOREIGN KEY ( Keywords_ID ) REFERENCES Keywords ( ID ) ;
+
+ALTER TABLE Keywords ADD CONSTRAINT Keywords_Active_Defense_FK FOREIGN KEY ( Active_Defense_ID ) REFERENCES Active_Defense ( ID ) ;
+
+ALTER TABLE Keywords ADD CONSTRAINT Keywords_Passive_Defense_FK FOREIGN KEY ( Passive_Defense_ID ) REFERENCES Passive_Defense ( ID ) ;
+
+ALTER TABLE Query ADD CONSTRAINT Query_USERAOL_FK FOREIGN KEY ( USERAOL_ID ) REFERENCES "USERAOL" ( ID ) ;
+
+ALTER TABLE Query ADD CONSTRAINT Query_Website_FK FOREIGN KEY ( Website_ID ) REFERENCES Website ( ID ) ;
+
+ALTER TABLE Violence ADD CONSTRAINT Violence_Location_FK FOREIGN KEY ( Location_ID ) REFERENCES Location ( ID ) ;
+
+
+
+
+*************************************************************
+INSERTS
+*************************************************************
+
+
+
+DELETE FROM ACTIVE_DEFENSE WHERE ID = 3 ;
+INSERT INTO ACTIVE_DEFENSE VALUES
+  (1, 'weapon'
+  );
+INSERT INTO ACTIVE_DEFENSE VALUES
+  (2, 'axe'
+  );
+INSERT INTO ACTIVE_DEFENSE VALUES
+  (3, 'judo'
+  );
+INSERT INTO PASSIVE_DEFENSE VALUES
+  (1, 'dog'
+  );
+INSERT INTO PASSIVE_DEFENSE VALUES
+  (2, 'alarm'
+  );
+INSERT INTO PASSIVE_DEFENSE VALUES
+  (3, 'pepper spray'
+  );
+INSERT INTO CATEGORY VALUES
+  (1
+  );
+INSERT INTO CATEGORY VALUES
+  (2
+  );
+INSERT INTO CATEGORY VALUES
+  (3
+  );
+INSERT INTO USERAOL VALUES
+  (1
+  );
+INSERT INTO USERAOL VALUES
+  (2
+  );
+INSERT INTO USERAOL VALUES
+  (3
+  );
+INSERT INTO KEYWORDS VALUES
+  (1, 1, 1
+  );
+INSERT INTO KEYWORDS VALUES
+  (2, 2, 2
+  );
+INSERT INTO KEYWORDS VALUES
+  (3, 3, 3
+  );
+INSERT INTO KEYWORDMATCHCATEGORY VALUES
+  (1, 1
+  );
+INSERT INTO KEYWORDMATCHCATEGORY VALUES
+  (2, 2
+  );
+INSERT INTO KEYWORDMATCHCATEGORY VALUES
+  (3, 3
+  );
+INSERT INTO STATE VALUES
+  (1, 'Alabamah'
+  );
+INSERT INTO KEYWORDMATCHCATEGORY VALUES
+  (2, 'New York'
+  );
+INSERT INTO KEYWORDMATCHCATEGORY VALUES
+  (3, 'Washington DC'
+  );
+INSERT INTO LOCATION VALUES
+  (1, 'New York', 1, 1
+  );
+INSERT INTO LOCATION VALUES
+  (2, 'Chicago', 2, 2
+  );
+INSERT INTO LOCATION VALUES
+  (3, 'Miami', 3, 3
+  );
+INSERT INTO WEBSITE VALUES
+  (1, 'www.weapons.com'
+  );
+INSERT INTO WEBSITE VALUES
+  (2, 'www.guns.com'
+  );
+INSERT INTO WEBSITE VALUES
+  (3, 'www.dogs.com'
+  );
+INSERT INTO QUERY VALUES
+  (1, 'Weapons in New York', 1, 1
+  );
+INSERT INTO QUERY VALUES
+  (2, 'Dogs in Chicago', 2, 2
+  );
+INSERT INTO QUERY VALUES
+  (3, 'Pepper spray in New York', 3, 3
+  );
+INSERT INTO LOCATIONMATCHQUERY VALUES
+  (1, 1
+  );
+INSERT INTO LOCATIONMATCHQUERY VALUES
+  (2, 2
+  );
+INSERT INTO LOCATIONMATCHQUERY VALUES
+  (3, 3
+  );
+INSERT INTO QUERYMATCHKEYWORD VALUES
+  (1, 1
+  );
+INSERT INTO QUERYMATCHKEYWORD VALUES
+  (2, 2
+  );
+INSERT INTO QUERYMATCHKEYWORD VALUES
+  (3, 3
+  );
+INSERT INTO WEBSITEMATCHCATEGORY VALUES
+  (1, 1
+  );
+INSERT INTO WEBSITEMATCHCATEGORY VALUES
+  (2, 2
+  );
+INSERT INTO WEBSITEMATCHCATEGORY VALUES
+  (3, 3
+  );
+INSERT INTO CRIME VALUES
+  (1, 123, 1
+  );
+INSERT INTO CRIME VALUES
+  (2, 456, 2
+  );
+INSERT INTO CRIME VALUES
+  (3, 789, 3
+  );
+INSERT INTO VIOLENCE VALUES
+  (1, 123, 1
+  );
+INSERT INTO VIOLENCE VALUES
+  (2, 456, 2
+  );
+INSERT INTO VIOLENCE VALUES
+  (3, 789, 3
+  );
+
