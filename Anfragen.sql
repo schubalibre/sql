@@ -1,4 +1,4 @@
-/*Frage 2: Welche St�dte haben ein h�heres Kriminalit�tsaufkommen als der U.S. Amerikanische Durchschnitt?*/
+/*Frage 2: Welche St�dte haben ein h�heres Kriminalit�tsaufkommen als der U.S. Amerikanische Durchschnitt?*/
 SELECT LOCATION.CITY,LOCATION.POPULATION, FBI.Property_CRIME,
 ROUND((FBI.Property_CRIME / LOCATION.POPULATION),4) AS relation
 FROM LOCATION
@@ -10,7 +10,7 @@ SUM(LOCATION.POPULATION)
 FROM FBI,LOCATION)
 ORDER BY (FBI.Property_CRIME / LOCATION.POPULATION) DESC;
 
-/*Frage 3: Welche St�dte haben ein h�heres Gewaltaufkommen im Verh�ltnis zur Bev�lkerungszahl als der U.S. Amerikanische Durchschnitt?*/
+/*Frage 3: Welche St�dte haben ein h�heres Gewaltaufkommen im Verh�ltnis zur Bev�lkerungszahl als der U.S. Amerikanische Durchschnitt?*/
 SELECT LOCATION.CITY,LOCATION.POPULATION, FBI.VIOLANCE_CRIME,
 ROUND((FBI.VIOLANCE_CRIME / LOCATION.POPULATION),4) AS relation
 FROM LOCATION
@@ -21,3 +21,73 @@ SUM(FBI.VIOLANCE_CRIME) /
 SUM(LOCATION.POPULATION)
 FROM FBI,LOCATION)
 ORDER BY (FBI.VIOLANCE_CRIME / LOCATION.POPULATION) DESC;
+
+/* Frage 4: Welche Städte wurden in den Suchen (am häufigsten) mit einem unserer Stichworten in Verbindung gebracht? */ 
+SELECT LOCATION.CITY, COUNT(LOCATION.CITY) AS NUMBER_OF_MATCHES
+FROM MATCH_QUERY_LOCATION, MATCH_QUERY_KEYWORDS, LOCATION
+WHERE MATCH_QUERY_LOCATION.USER_ID = MATCH_QUERY_KEYWORDS.USER_ID 
+AND MATCH_QUERY_LOCATION.LOCATION_ID = LOCATION.ID
+GROUP BY LOCATION.CITY
+ORDER BY NUMBER_OF_MATCHES DESC;
+
+/* 5. Wie oft suchen die Nutzer nach passiver Verteidigung? */
+SELECT COUNT(MATCH_QUERY_KEYWORDS.KEYWORD_ID) AS NUMBER_OF_PASSIVE_MATCHES
+FROM 
+MATCH_QUERY_KEYWORDS, KEYWORDS
+WHERE  
+MATCH_QUERY_KEYWORDS.KEYWORD_ID = KEYWORDS.ID
+AND KEYWORDS.CATEGORY = 2;
+
+/* 6. Wie oft suchen die Nutzer nach aktiver Verteidigung? */
+SELECT COUNT(MATCH_QUERY_KEYWORDS.KEYWORD_ID) AS NUMBER_OF_ACTIVE_MATCHES
+FROM 
+MATCH_QUERY_KEYWORDS, KEYWORDS
+WHERE  
+MATCH_QUERY_KEYWORDS.KEYWORD_ID = KEYWORDS.ID
+AND KEYWORDS.CATEGORY = 1;
+
+/* 7. Wie oft wurde nach passiver im Vergleich zu aktiver Verteidigung gesucht? 
+- Die Ergebnisse aus fünf und sechs geben uns die Antwort auf diese Frage. Wir bekommen jeweils eine Zahl zurück geliefert und können daraus ein Tortendiagramm erstellen. 
+- Da unsere Anfragen momentan noch kein endgültiges Ergebnis liefern, gibt es auch noch keine Auswertung hierfür. 
+*/
+
+/* 8. Welche Internetseiten wurden über die Suche nach aktiver Verteidigung am häufigsten besucht? */
+
+SELECT AOLDATA.QUERYDATA_IDX.CLICKURL AS WEBSITE_ACTIVE_MATCH
+FROM AOLDATA.QUERYDATA_IDX,MATCH_QUERY_KEYWORDS, KEYWORDS
+WHERE KEYWORDS.CATEGORY = 1
+AND MATCH_QUERY_KEYWORDS.KEYWORD_ID = KEYWORDS.ID
+AND MATCH_QUERY_KEYWORDS.QUERY_ID = AOLDATA.QUERYDATA_IDX.ID
+AND AOLDATA.QUERYDATA_IDX.CLICKURL IS NOT NULL;
+
+
+/* 9. Welche Internetseiten wurden über die Suche nach passiver Verteidigung am häufigsten besucht? */
+
+SELECT AOLDATA.QUERYDATA_IDX.CLICKURL AS WEBSITE_PASSIVE_MATCH
+FROM AOLDATA.QUERYDATA_IDX,MATCH_QUERY_KEYWORDS, KEYWORDS
+WHERE KEYWORDS.CATEGORY = 2
+AND MATCH_QUERY_KEYWORDS.KEYWORD_ID = KEYWORDS.ID
+AND MATCH_QUERY_KEYWORDS.QUERY_ID = AOLDATA.QUERYDATA_IDX.ID
+AND AOLDATA.QUERYDATA_IDX.CLICKURL IS NOT NULL;
+
+/* 10. Wenn der Nutzer auf eine Internetseite einer unserer Kategorien klickt, können wir aus seinen anderen Anfragen auf den Standort schließen? */
+
+SELECT MATCH_QUERY_LOCATION.USER_ID, LOCATION.CITY, AOLDATA.QUERYDATA_IDX.CLICKURL
+FROM AOLDATA.QUERYDATA_IDX, KEYWORDS, MATCH_QUERY_LOCATION, MATCH_QUERY_KEYWORDS, LOCATION
+WHERE 
+MATCH_QUERY_LOCATION.USER_ID = MATCH_QUERY_KEYWORDS.USER_ID 
+AND MATCH_QUERY_LOCATION.LOCATION_ID = LOCATION.ID
+AND MATCH_QUERY_KEYWORDS.KEYWORD_ID = KEYWORDS.ID
+AND MATCH_QUERY_KEYWORDS.QUERY_ID = AOLDATA.QUERYDATA_IDX.ID
+AND AOLDATA.QUERYDATA_IDX.CLICKURL IS NOT NULL
+ORDER BY MATCH_QUERY_LOCATION.USER_ID;
+
+/* 11. Wo wird am wenigsten/meisten nach passiver und aktiver Verteidigung im Verhältnis zu Bevölkerungszahl gesucht? */
+
+SELECT LOCATION.CITY, ROUND((COUNT(LOCATION.CITY) / LOCATION.POPULATION),4) AS relation
+FROM MATCH_QUERY_LOCATION, MATCH_QUERY_KEYWORDS, LOCATION
+WHERE MATCH_QUERY_LOCATION.USER_ID = MATCH_QUERY_KEYWORDS.USER_ID 
+AND MATCH_QUERY_LOCATION.LOCATION_ID = LOCATION.ID 
+group by LOCATION.CITY 
+;
+
